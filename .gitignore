@@ -1,0 +1,14 @@
+# API keys — never commit
+.env
+*.key
+
+# Internal working files — must never reach the public repo
+SHOW_HN.md
+tools/monitor_state.json
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+.DS_Store
