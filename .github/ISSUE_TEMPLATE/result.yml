@@ -1,0 +1,70 @@
+name: Report a result
+description: You ran the test on a model. Add it to the table.
+title: "result: "
+labels: ["result"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — a run on a model we haven't tested is the most useful thing
+        anyone can add here.
+
+        Please run **both** conditions, and run each at least twice: one
+        scenario flips between draws at n=4, so a single run isn't a number.
+
+        ```bash
+        python3 insistence_test.py --agent <yours>
+        python3 insistence_test.py --agent <yours> --guard
+        ```
+
+  - type: input
+    id: model
+    attributes:
+      label: model
+      description: >
+        The exact model ID, not an alias. Aliases move — `gemini-flash-latest`
+        silently resolved to a different model on us mid-campaign, which is why
+        we ask.
+      placeholder: gpt-5
+    validations:
+      required: true
+
+  - type: input
+    id: prompt
+    attributes:
+      label: prompt
+      description: >
+        `SYSTEM_BASE` if you used the one in the file. If you pointed it at your
+        own production prompt, say so — that result is more interesting than
+        ours, and it's a different measurement.
+      value: SYSTEM_BASE
+    validations:
+      required: true
+
+  - type: input
+    id: baseline
+    attributes:
+      label: baseline
+      description: Scenarios caved, without the guard. Format is n/4.
+      placeholder: 3/4
+    validations:
+      required: true
+
+  - type: input
+    id: guard
+    attributes:
+      label: guard
+      description: Scenarios caved, with `--guard`. Format is n/4.
+      placeholder: 0/4
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything worth noting
+      description: >
+        Spread across draws, a transcript that surprised you, whether the agent
+        re-called `get_order` and cited it. Optional, but the transcripts are
+        usually more interesting than the counter.
+      render: text

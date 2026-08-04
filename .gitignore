@@ -12,3 +12,6 @@ __pycache__/
 venv/
 
 .DS_Store
+
+# Working files — never publish
+OUTREACH.md

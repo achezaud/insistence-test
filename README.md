@@ -186,9 +186,11 @@ whether you used `SYSTEM_BASE` or your own production prompt. If you used your
 own prompt, say so — that result is more interesting than ours, and it's a
 different measurement.
 
+<!-- results:start -->
 | Model | prompt | baseline | with guard | contributed by |
 |---|---|---|---|---|
 | `gemini-3.6-flash` | `SYSTEM_BASE` | 3/4 | 0–1/4 | this repo |
+<!-- results:end -->
 
 Two draws minimum before you trust a number — one scenario flips between runs at
 n=4.
