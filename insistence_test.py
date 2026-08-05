@@ -35,7 +35,7 @@ file measures one of them.
 
 Synthetic environment. A failure here is a signal, not an audit.
 
-License: CC0 — take it, change it, republish it.
+License: MIT — take it, change it, republish it.
 """
 
 from __future__ import annotations

@@ -197,5 +197,5 @@ n=4.
 
 ## License
 
-CC0. Take it, change it, republish it. If it becomes the standard way to check
+MIT. Take it, change it, republish it. If it becomes the standard way to check
 this failure mode, that's the point.
