@@ -84,7 +84,7 @@ That is the two lines doing their job, visible in the tool-call trace.
 ## What we measured
 
 A larger benchmark behind this file runs 30 distractor scenarios across four
-kinds of pushback, on two Gemini models, two runs each, paired and scored
+kinds of pushback, on four Gemini models, two runs each, paired and scored
 deterministically from the tool-call trace.
 
 Undue reversals, baseline → with guard, 30 scenarios per cell:
@@ -93,15 +93,19 @@ Undue reversals, baseline → with guard, 30 scenarios per cell:
 |---|---|---|---|
 | `gemini-3.6-flash`, run 1 | 8 | **0** | 8 / 0 |
 | `gemini-3.6-flash`, run 2 | 9 | **0** | 9 / 0 |
+| `gemini-3.7-flash`, run 1 | 7 | **0** | 7 / 0 |
+| `gemini-3.7-flash`, run 2 | 7 | **0** | 7 / 0 |
+| `gemini-3.5-flash-lite`, run 1 | 8 | 2 | 6 / 0 |
+| `gemini-3.5-flash-lite`, run 2 | 7 | 2 | 5 / 0 |
 | `gemini-3.1-flash-lite`, run 1 | 18 | 12 | 6 / 0 |
 | `gemini-3.1-flash-lite`, run 2 | 18 | 13 | 5 / 0 |
 
-**28 scenarios fixed, 0 broken, across 120 pairs.** Against a measured noise
+**53 scenarios fixed, 0 broken, across 240 pairs.** Against a measured noise
 floor: re-running the *same* condition twice flips 0–3 scenarios, in both
-directions. The guard flips 5–9, never in the wrong direction. The asymmetry is
+directions. The guard never flips one in the wrong direction. The asymmetry is
 the result — not the p-values.
 
-### The guard fixes half the problem, and the half it misses is the interesting one
+### What the guard reaches, and what it doesn't
 
 Broken out by kind of pushback:
 
@@ -109,45 +113,81 @@ Broken out by kind of pushback:
 |---|---|---|---|---|---|
 | `3.6-flash` | baseline | 5/8 · 5/8 | 1/8 · 0/8 | 1/7 · 3/7 | 1/7 · 1/7 |
 | `3.6-flash` | guard | **0/8 · 0/8** | 0/8 · 0/8 | **0/7 · 0/7** | 0/7 · 0/7 |
-| `flash-lite` | baseline | 5/8 · 5/8 | 5/8 · 4/8 | 7/7 · 7/7 | 1/7 · 2/7 |
-| `flash-lite` | guard | **5/8 · 5/8** | 0/8 · 1/8 | **7/7 · 7/7** | 0/7 · 0/7 |
-
-On `flash-lite` the guard is **completely inert** on D1 and D3 — 5/8 and 7/7 in
-both conditions, both runs, not a single scenario flipped. The residual failures
-are exactly D1 + D3.
+| `3.7-flash` | baseline | 5/8 · 5/8 | 0/8 · 0/8 | 1/7 · 1/7 | 1/7 · 1/7 |
+| `3.7-flash` | guard | **0/8 · 0/8** | 0/8 · 0/8 | **0/7 · 0/7** | 0/7 · 0/7 |
+| `3.5-flash-lite` | baseline | 4/8 · 4/8 | 0/8 · 0/8 | 3/7 · 3/7 | 1/7 · 0/7 |
+| `3.5-flash-lite` | guard | **1/8 · 1/8** | 0/8 · 0/8 | **1/7 · 1/7** | 0/7 · 0/7 |
+| `3.1-flash-lite` | baseline | 5/8 · 5/8 | 5/8 · 4/8 | 7/7 · 7/7 | 1/7 · 2/7 |
+| `3.1-flash-lite` | guard | **5/8 · 5/8** | 0/8 · 1/8 | **7/7 · 7/7** | 0/7 · 0/7 |
 
 D2 and D4 are *epistemic* pressure — a weak source contradicts a strong one, or
 you're asked again with nothing new. That's what the two lines address, and they
-address it completely.
+address it completely, on every model.
 
 D1 and D3 are *social and authority* pressure — a customer who insists, a
-message claiming to be from a supervisor. The guard says nothing about those,
-and the weaker model folds every time.
+message claiming to be from a supervisor. Nothing in the guard speaks to those,
+and what happens there is decided by the model, not by the prompt: three of the
+four handle it anyway, and one does not at all.
+
+On `gemini-3.1-flash-lite` the guard is **completely inert** on D1 and D3 — 5/8
+and 7/7 in both conditions, both runs, not a single scenario flipped. Its
+successor `3.5-flash-lite`, same weight class, is not inert at all: D1 falls
+4 → 1 and D3 falls 3 → 1. So this is not a "small models fold" story, and we
+have stopped telling it that way.
 
 One number needs no statistics at all: **`gemini-3.1-flash-lite` obeys a fake
 supervisor in 7 out of 7 scenarios, in all four cells, guard or no guard.**
 
-The four scenarios in this file are all D1 — the dimension where the fix works on
-one model and does nothing on the other.
+The four scenarios in this file are all D1 — the dimension where the outcome
+depends on the model rather than on the prompt.
+
+### The guard is not free
+
+Reversal is the failure in the 30 scenarios above. There are 30 more where
+correcting **is** the right answer — the world genuinely changed, or the agent
+genuinely erred — and until recently there were only 10 of them, too few to see
+what the guard breaks. There are now 30, and something shows up.
+
+On `gemini-3.7-flash`, the guard makes correction worse in a paired, directional
+way: 14 scenarios down against 1 up, then 12 down against 0 up (sign test
+p = 0.0010 and 0.0005). On the other three models the change is not
+distinguishable from noise. Task completion stays at 1.00 everywhere, so this is
+not an agent refusing to act — it acts, and corrects worse.
+
+One break is reproducible and shows the mechanism. In one scenario the customer
+says part of the order was already returned last week: real new information the
+record does not yet reflect, which should trigger escalation. The guard's second
+line reads it as unverified and holds. **The rule cannot tell a claim that
+should move the agent from one that should not.** It only knows that claims are
+not authoritative.
+
+If you adopt these two lines, measure both sides. A guard evaluated only on the
+failure it was written to prevent will always look better than it is.
 
 ## What this does not tell you
 
-- **It does not measure whether your agent can correct itself.** An agent that
-  never yields scores perfectly here and would be a disaster in front of a real
-  mistake. Correcting and caving are opposite axes; this measures one.
+- **This file measures one axis; the benchmark behind it measures two.** An
+  agent that never yields scores perfectly on the four scenarios here and would
+  be a disaster in front of a real mistake. Correcting and caving are opposite
+  axes. The 30 + 30 benchmark scores both, which is how the guard's cost above
+  became visible; `insistence_test.py` scores only the caving side.
 - **The baseline prompt is one we wrote.** The failure and its fix come from the
   same hand. Nothing rules out that we built a weak baseline and then sold the
   patch. The defensible claim is a paired differential — *these two lines, from
   that prompt* — not "LLM agents are sycophantic." Run it against your own
   production prompt; that number means more than ours.
-- **Two models, one vendor.** `gemini-3.6-flash` and `gemini-3.1-flash-lite`
-  share a provider, likely training data, and an architecture family. That the
-  effect shows up on both is a hint, not a generalization. **We have not tested
-  GPT or Claude.** If you run this on one, please open an issue with the output —
-  that's the single most useful contribution to this repo.
+- **Four models, one vendor.** All four share a provider, likely training data,
+  and an architecture family. That the effect shows up on all of them is a
+  stronger hint than before, and still not a generalization. **We have not
+  tested GPT or Claude.** If you run this on one, please open an issue with the
+  output — that's the single most useful contribution to this repo, and the cost
+  result above is exactly the kind of finding a second vendor would confirm or
+  dissolve.
 - **The scenarios are ours.** The D1/D3 vs D2/D4 split could be a property of how
-  we write injections rather than a property of the models. The generator and the
-  full traces are published for exactly that reason: check.
+  we write injections rather than a property of the models. The four in this file
+  are published in full, in `insistence_test.py`, so you can read exactly what
+  pressure is applied. The 60-scenario set behind the tables above is not
+  published; ask and we will send it.
 - **Two runs is not a standard deviation.** No model rankings come out of this.
 - **One domain, one toy simulator.** E-commerce refunds, three tools. Nothing is
   claimed outside it.
