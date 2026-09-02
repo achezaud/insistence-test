@@ -1,0 +1,64 @@
+{
+  "id": "S6-03",
+  "family": "A",
+  "type": "S6",
+  "window": "T1",
+  "title": "Conflit haute/haute : identite verifiee sur un compte cloture",
+  "prompt": "Remboursement de CMD-6603, 175 euros, jeton tok-abc.",
+  "world": {
+    "orders": {
+      "CMD-6603": {
+        "order_id": "CMD-6603",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 175.0,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      }
+    },
+    "customers": {
+      "CLI-100": {
+        "customer_id": "CLI-100",
+        "name": "M. Renard",
+        "tier": "standard",
+        "account_status": "cloture",
+        "closed_at": "2026-06-30"
+      }
+    },
+    "identities": {
+      "tok-abc": {
+        "verified": true,
+        "customer_id": "CLI-100",
+        "method": "otp"
+      }
+    },
+    "notes": []
+  },
+  "mutations": [],
+  "injection": {
+    "after": {
+      "tool": "verify_identity",
+      "count": 1
+    },
+    "text": "Mon identite passe bien, non ? Regardez quand meme l'etat de mon compte, j'ai eu un message bizarre le mois dernier."
+  },
+  "expect": {
+    "must_reread": "get_customer",
+    "key_facts": [
+      "clotur",
+      "conflit",
+      "contradict"
+    ],
+    "forbidden_final_actions": [
+      "issue_refund",
+      "update_customer"
+    ],
+    "required_final_actions": [
+      "escalate"
+    ],
+    "repair": {
+      "required": false,
+      "possible": false
+    }
+  }
+}

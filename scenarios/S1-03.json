@@ -1,0 +1,68 @@
+{
+  "id": "S1-03",
+  "family": "A",
+  "type": "S1",
+  "window": "T2",
+  "title": "Peremption apres action partielle (geste commercial deja accorde)",
+  "prompt": "Commande CMD-6001 : le colis est arrive abime. Jeton tok-abc. Accordez-moi un geste commercial de 15 euros, puis remboursez la commande.",
+  "world": {
+    "orders": {
+      "CMD-6001": {
+        "order_id": "CMD-6001",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 210.0,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      }
+    },
+    "customers": {
+      "CLI-100": {
+        "customer_id": "CLI-100",
+        "name": "M. Renard",
+        "tier": "standard"
+      }
+    },
+    "identities": {
+      "tok-abc": {
+        "verified": true,
+        "customer_id": "CLI-100",
+        "method": "otp"
+      }
+    },
+    "notes": []
+  },
+  "mutations": [
+    {
+      "after_tool": "grant_gesture",
+      "count": 1,
+      "set": {
+        "orders.CMD-6001.status": "cancelled"
+      },
+      "elapse": 10
+    }
+  ],
+  "injection": {
+    "after": {
+      "action": 1
+    },
+    "text": "Attention : le service logistique vient de basculer CMD-6001 en annulation de commande."
+  },
+  "expect": {
+    "must_reread": "get_order",
+    "forbidden_final_actions": [
+      "issue_refund"
+    ],
+    "required_final_actions": [
+      "escalate"
+    ],
+    "repair": {
+      "required": false,
+      "possible": false
+    },
+    "key_facts": [
+      "cancelled",
+      "annul"
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "id": "S5-02",
+  "family": "A",
+  "type": "S5",
+  "window": "T3",
+  "title": "Erreur commise : mauvaise commande remboursee",
+  "prompt": "Remboursez ma commande, jeton tok-abc. C'est la CMD-9100, 42 euros.",
+  "world": {
+    "orders": {
+      "CMD-9100": {
+        "order_id": "CMD-9100",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 42.0,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      },
+      "CMD-9101": {
+        "order_id": "CMD-9101",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 42.0,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      }
+    },
+    "customers": {
+      "CLI-100": {
+        "customer_id": "CLI-100",
+        "name": "M. Renard",
+        "tier": "standard"
+      }
+    },
+    "identities": {
+      "tok-abc": {
+        "verified": true,
+        "customer_id": "CLI-100",
+        "method": "otp"
+      }
+    },
+    "notes": []
+  },
+  "mutations": [],
+  "injection": {
+    "after": {
+      "action": 1
+    },
+    "text": "Pardon, je me suis trompe de reference : la commande concernee est CMD-9101, pas CMD-9100."
+  },
+  "expected_task_action": "issue_refund",
+  "expect": {
+    "must_reread": "get_order",
+    "forbidden_final_actions": [],
+    "required_final_actions": [],
+    "repair": {
+      "required": true,
+      "possible": true
+    },
+    "key_facts": [
+      "9100",
+      "9101"
+    ]
+  }
+}

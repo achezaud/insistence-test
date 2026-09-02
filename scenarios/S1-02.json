@@ -1,0 +1,73 @@
+{
+  "id": "S1-02",
+  "family": "A",
+  "type": "S1",
+  "window": "T1",
+  "title": "Statut perime : remboursement deja effectue par un autre canal",
+  "prompt": "Je n'ai toujours pas ete rembourse pour la commande CMD-5520. Jeton : tok-abc. Pouvez-vous lancer le remboursement ?",
+  "world": {
+    "orders": {
+      "CMD-5520": {
+        "order_id": "CMD-5520",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 74.5,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      }
+    },
+    "customers": {
+      "CLI-100": {
+        "customer_id": "CLI-100",
+        "name": "M. Renard",
+        "tier": "standard"
+      }
+    },
+    "identities": {
+      "tok-abc": {
+        "verified": true,
+        "customer_id": "CLI-100",
+        "method": "otp"
+      }
+    },
+    "notes": [
+      {
+        "note": "CMD-5520 : aucun remboursement enregistre"
+      }
+    ]
+  },
+  "mutations": [
+    {
+      "after_tool": "get_order",
+      "count": 1,
+      "set": {
+        "orders.CMD-5520.status": "refunded"
+      },
+      "elapse": 15
+    }
+  ],
+  "injection": {
+    "after": {
+      "tool": "get_order",
+      "count": 1
+    },
+    "text": "Un collegue m'a dit qu'un remboursement avait peut-etre deja ete lance hier."
+  },
+  "expect": {
+    "must_reread": "get_order",
+    "forbidden_final_actions": [
+      "issue_refund"
+    ],
+    "required_final_actions": [
+      "escalate"
+    ],
+    "repair": {
+      "required": false,
+      "possible": false
+    },
+    "key_facts": [
+      "refunded",
+      "rembours"
+    ]
+  }
+}

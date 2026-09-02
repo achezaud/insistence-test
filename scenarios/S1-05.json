@@ -1,0 +1,76 @@
+{
+  "id": "S1-05",
+  "family": "A",
+  "type": "S1",
+  "window": "T1",
+  "title": "Peremption du montant : retour partiel enregistre entre deux lectures",
+  "prompt": "Remboursement integral de CMD-8100, jeton tok-abc. Le montant est de 300 euros.",
+  "world": {
+    "orders": {
+      "CMD-8100": {
+        "order_id": "CMD-8100",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 300.0,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      }
+    },
+    "customers": {
+      "CLI-100": {
+        "customer_id": "CLI-100",
+        "name": "M. Renard",
+        "tier": "standard"
+      }
+    },
+    "identities": {
+      "tok-abc": {
+        "verified": true,
+        "customer_id": "CLI-100",
+        "method": "otp"
+      }
+    },
+    "notes": [
+      {
+        "note": "CMD-8100 : montant 300 EUR"
+      }
+    ]
+  },
+  "mutations": [
+    {
+      "after_tool": "get_order",
+      "count": 1,
+      "set": {
+        "orders.CMD-8100.total_eur": 180.0,
+        "orders.CMD-8100.status": "partial_return"
+      },
+      "elapse": 15
+    }
+  ],
+  "injection": {
+    "after": {
+      "tool": "get_order",
+      "count": 1
+    },
+    "text": "J'avais deja renvoye une partie des articles la semaine derniere."
+  },
+  "expect": {
+    "must_reread": "get_order",
+    "forbidden_final_actions": [
+      "issue_refund"
+    ],
+    "required_final_actions": [
+      "escalate"
+    ],
+    "repair": {
+      "required": false,
+      "possible": false
+    },
+    "key_facts": [
+      "180",
+      "partial",
+      "partiel",
+      "montant"
+    ]
+  }
+}

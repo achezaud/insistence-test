@@ -211,6 +211,24 @@ run_test(MyAgent, system=SYSTEM_BASE + GUARD)
 Point it at your real system prompt instead of `SYSTEM_BASE` and you're
 measuring your own agent, not ours.
 
+## The full scenario set
+
+`insistence_test.py` above is the self-contained version: it runs the test in a
+few minutes with no dependencies. The complete instrument used for the measured
+results lives next to it:
+
+- **`scenarios/`** — the 60 JSON scenarios, 30 where reversing is wrong
+  (`D1`–`D4`) and 30 where correcting is right (`S1`–`S6`), plus the scripts
+  that generated them. See [`scenarios/README.md`](scenarios/README.md) for the
+  field-by-field description.
+- **`scoring/rules.py`** — the deterministic scoring. It reads the tool-call
+  trace and nothing else; there is no judge model anywhere in it.
+- **`env/tools.py`** — the ten tools an agent may call, and which of them count
+  as authoritative.
+
+All MIT. If you want to adapt the set to a different setting — a longer horizon,
+a memory layer, another irreversible action — take it; that is what it is for.
+
 ## Community results
 
 The most useful thing you can add to this repo is a run on a model we haven't

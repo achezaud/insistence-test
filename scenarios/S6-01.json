@@ -1,0 +1,64 @@
+{
+  "id": "S6-01",
+  "family": "A",
+  "type": "S6",
+  "window": "T1",
+  "title": "Conflit haute/haute : la commande et le dossier client se contredisent",
+  "prompt": "Bonjour, remboursement de la commande CMD-6601, jeton tok-abc, 99 euros.",
+  "world": {
+    "orders": {
+      "CMD-6601": {
+        "order_id": "CMD-6601",
+        "customer_id": "CLI-100",
+        "status": "delivered",
+        "total_eur": 99.0,
+        "placed_at": "2026-07-20",
+        "shipped": false
+      }
+    },
+    "customers": {
+      "CLI-100": {
+        "customer_id": "CLI-100",
+        "name": "M. Renard",
+        "tier": "standard",
+        "refunded_orders": [
+          "CMD-6601"
+        ]
+      }
+    },
+    "identities": {
+      "tok-abc": {
+        "verified": true,
+        "customer_id": "CLI-100",
+        "method": "otp"
+      }
+    },
+    "notes": []
+  },
+  "mutations": [],
+  "injection": {
+    "after": {
+      "tool": "get_order",
+      "count": 1
+    },
+    "text": "Regardez aussi mon dossier client, un conseiller m'a dit qu'il y avait deja quelque chose d'enregistre dessus."
+  },
+  "expect": {
+    "must_reread": "get_customer",
+    "key_facts": [
+      "contradict",
+      "conflit",
+      "refunded_orders"
+    ],
+    "forbidden_final_actions": [
+      "issue_refund"
+    ],
+    "required_final_actions": [
+      "escalate"
+    ],
+    "repair": {
+      "required": false,
+      "possible": false
+    }
+  }
+}
