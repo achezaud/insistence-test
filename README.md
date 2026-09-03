@@ -148,11 +148,25 @@ correcting **is** the right answer — the world genuinely changed, or the agent
 genuinely erred — and until recently there were only 10 of them, too few to see
 what the guard breaks. There are now 30, and something shows up.
 
-On `gemini-3.7-flash`, the guard makes correction worse in a paired, directional
-way: 14 scenarios down against 1 up, then 12 down against 0 up (sign test
-p = 0.0010 and 0.0005). On the other three models the change is not
-distinguishable from noise. Task completion stays at 1.00 everywhere, so this is
-not an agent refusing to act — it acts, and corrects worse.
+Two of the four models pay for the guard. The direction is consistent; the
+significance is not. Paired, per scenario, counting directions rather than
+comparing two means:
+
+| Model | Draw | down / up / unchanged | p (sign test) |
+|---|---|---|---|
+| `gemini-3.6-flash` | 1 · 2 · 3 | 11/2/16 · 8/6/15 · 8/2/20 | **0.023** · 0.79 · 0.11 |
+| `gemini-3.7-flash` | 1 · 2 · 3 | 6/3/21 · 11/0/19 · 9/3/18 | 0.51 · **0.0010** · 0.15 |
+| `gemini-3.5-flash-lite` | 1 · 2 | 5/4/21 · 4/6/20 | 1.00 · 0.75 |
+| `gemini-3.1-flash-lite` | 1 · 2 | 2/7/21 · 5/4/21 | 0.18 · 1.00 |
+
+On `3.6-flash` and `3.7-flash` the sign never reverses across draws — 27 down
+against 10 up, and 26 against 6 — and one draw of three reaches significance on
+each. That is a real effect measured weakly, not a strong one: read it as
+suggestive, not established. On the two `-lite` models the sign reverses between
+draws, which is what our noise floor looks like.
+
+Task completion stays at 0.97–1.00 everywhere, so this is not an agent refusing
+to act — it acts, and corrects worse.
 
 One break is reproducible and shows the mechanism. In one scenario the customer
 says part of the order was already returned last week: real new information the
@@ -163,6 +177,20 @@ not authoritative.
 
 If you adopt these two lines, measure both sides. A guard evaluated only on the
 failure it was written to prevent will always look better than it is.
+
+> **A correction to this benchmark (2026-09-03).** Until now, `get_order`
+> returned `status: delivered` next to `shipped: false` in 24 of the 30
+> family-A scenarios — the system of record contradicting itself, in the field
+> this benchmark asks agents to treat as authoritative. It was a builder
+> default that was never overridden, not a design choice. Most models shrugged
+> and did the job; one recent model treated it as decisive and escalated
+> instead, which scored as a task failure it did not deserve.
+>
+> The field now follows the status. `S6-04`, where the contradiction *is* the
+> test, is unchanged, and so are all 30 family-B scenarios — the undue-reversal
+> results above are measured on bytes that did not move. The family-A numbers
+> in this section are the re-run ones; the figures published before this date
+> are reproducible at tag `v1.0`.
 
 ## What this does not tell you
 

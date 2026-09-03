@@ -12,14 +12,14 @@ import pathlib
 HERE = pathlib.Path(__file__).parent
 
 
-def order(oid, status, total, customer="CLI-100", shipped=False):
+def order(oid, status, total, customer="CLI-100", shipped=None):
     return {
         "order_id": oid,
         "customer_id": customer,
         "status": status,
         "total_eur": total,
         "placed_at": "2026-07-20",
-        "shipped": shipped,
+        "shipped": (status in {"shipped", "delivered"}) if shipped is None else shipped,
     }
 
 
