@@ -254,6 +254,18 @@ results lives next to it:
 - **`env/tools.py`** — the ten tools an agent may call, and which of them count
   as authoritative.
 
+- **`results/scores.csv`** — the per-scenario score of every execution behind
+  the paper: 7 422 rows of (dataset, model, condition, draw, scenario, family,
+  `cs`, `task_failed`). The raw traces are 37 MB and are not published; the
+  scores are 481 KB and are what the paper's paired comparison actually reads.
+  A row with an empty `cs` is a task failure, kept visible because it drops out
+  of the pairs; a cell absent from the file is an execution that never
+  completed. Regenerate with `tools/export_scores.py`.
+- **`analyses/paired_directions.py`** — recomputes §5.4 from `scores.csv`:
+  for each model and draw, how many family-A scenarios score lower under the
+  guard than at baseline, with a two-sided sign test. Run it and you get the
+  table in the paper, without taking our word for it.
+
 All MIT. If you want to adapt the set to a different setting — a longer horizon,
 a memory layer, another irreversible action — take it; that is what it is for.
 
