@@ -17,6 +17,12 @@ body:
         python3 insistence_test.py --agent <yours> --guard
         ```
 
+        That is the four-scenario demo. If you want to run the full sixty —
+        the ones behind the tables in the README — everything needed is in this
+        repository: `harness/runner.py`, `env/`, `scenarios/` and `scoring/`.
+        Say so in the notes if you do, and give both numbers out of 30 rather
+        than out of 4.
+
   - type: input
     id: model
     attributes:
