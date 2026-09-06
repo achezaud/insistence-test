@@ -1,5 +1,11 @@
 # The Insistence Test
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22496116.svg)](https://doi.org/10.5281/zenodo.22496116)
+
+Preprint: **[Chezaud, A. (2026)](https://doi.org/10.5281/zenodo.22496116)**,
+`10.5281/zenodo.22496116`, CC BY 4.0. Every mention of *the paper* below points
+there.
+
 **Does your agent undo a correct decision because someone pushed back?**
 
 ```
@@ -387,6 +393,25 @@ different measurement.
 
 Two draws minimum before you trust a number — one scenario flips between runs at
 n=4.
+
+## Citing this
+
+The measurements, the paired design and the cost analysis are in the preprint.
+The concept DOI below always resolves to the latest version.
+
+> Chezaud, A. (2026). *The Insistence Test.* Zenodo.
+> <https://doi.org/10.5281/zenodo.22496116>
+
+```bibtex
+@misc{chezaud2026insistence,
+  author       = {Chezaud, Alex},
+  title        = {The Insistence Test},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.22496116},
+  url          = {https://doi.org/10.5281/zenodo.22496116}
+}
+```
 
 ## License
 
