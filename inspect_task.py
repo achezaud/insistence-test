@@ -108,6 +108,29 @@ _PARAM_DESCRIPTIONS = {
     "action_id": "Identifier of a previously performed action.",
 }
 
+# THE SECOND FORCED DIVERGENCE, AND IT IS THE SAME KIND.
+#
+# `update_customer.value` is declared as `{}` in env/tools.py — deliberately
+# untyped, because the field being written can hold anything and the Anthropic
+# Messages API accepts an empty schema. OpenAI's strict function-calling mode
+# does not: it rejects the whole request with
+#
+#     Invalid schema for function 'update_customer': in context=('properties',
+#     'value'), schema must have a 'type' key.
+#
+# so the task cannot run against any OpenAI-served model without a type here.
+# Like the descriptions above, it is grafted on in the adapter and env/tools.py
+# is left untouched.
+#
+# `string` is the honest choice rather than a convenient one: the simulator
+# takes the value as `Any` and its record keeps only `customer_id` and `field`
+# (env/simulator.py:164-169). The value is never read by the scorer, so no
+# published measurement moves — this widens what the schema *accepts*, not what
+# the harness *does*.
+_PARAM_TYPES = {
+    "value": "string",
+}
+
 
 def _make_tool(world: World, spec: dict[str, Any]) -> Tool:
     """Wrap one back-office call as an Inspect tool bound to `world`."""
@@ -129,6 +152,15 @@ def _make_tool(world: World, spec: dict[str, Any]) -> Tool:
                     f"no description for parameter '{param_name}' of tool "
                     f"'{name}' — add it to _PARAM_DESCRIPTIONS. Inspect rejects "
                     f"undescribed parameters."
+                ) from None
+        if not param.type:
+            try:
+                param.type = _PARAM_TYPES[param_name]
+            except KeyError:
+                raise KeyError(
+                    f"no type for parameter '{param_name}' of tool '{name}' — "
+                    f"add it to _PARAM_TYPES. OpenAI's strict function-calling "
+                    f"mode rejects an untyped parameter."
                 ) from None
 
     return ToolDef(
