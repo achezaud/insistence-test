@@ -88,11 +88,16 @@ careful one never reverses and the naive one always reverses on the same six,
 guard or no guard — a script cannot read a system prompt. If either column ever
 moves, the scorer is broken, not the model.
 
-Both are generated from the published scores, never typed by hand:
+**[The board](LEADERBOARD.md)** ranks these ten by baseline and says how to add
+a model to it — including yours. It is dated by the data, not by the day the
+file was rebuilt.
+
+All three are generated from the published scores, never typed by hand:
 
 ```bash
-python3 analyses/summary_table.py            # the table above
-python3 analyses/summary_figure.py > figure.svg   # the figure above
+python3 analyses/summary_table.py                  # the table above
+python3 analyses/summary_figure.py > figure.svg    # the figure above
+python3 analyses/leaderboard.py > LEADERBOARD.md   # the board
 ```
 
 The figure is emitted as plain SVG by a stdlib-only script. Regenerating a
