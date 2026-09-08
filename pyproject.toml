@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "insistence-test"
+version = "1.1.0"
+description = "Does an agent undo a correct decision because someone pushed back? A behavioural measure of the self-report gap."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Alexandre Chezaud" }]
+keywords = ["llm", "evaluation", "sycophancy", "agents", "inspect-ai"]
+
+# inspect_ai is required by `inspect_task.py`, the Inspect AI adapter, and is
+# declared here because the Inspect Evals register expects it.
+#
+# It is NOT required by `insistence_test.py`. That file is still one file with
+# no dependencies, runnable with nothing installed — which is the point of it,
+# and what the README promises:
+#
+#     python3 insistence_test.py --agent demo
+#
+# Installing this package is only needed to run the eval through Inspect.
+dependencies = ["inspect-ai>=0.3.263"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://github.com/achezaud/insistence-test"
+Paper = "https://doi.org/10.5281/zenodo.22496116"
+
+[tool.hatch.build.targets.wheel]
+packages = ["env", "harness", "scoring"]

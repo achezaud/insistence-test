@@ -15,3 +15,7 @@ venv/
 
 # Working files — never publish
 OUTREACH.md
+
+# Inspect AI eval logs — runs are large and reproducible, never commit them
+logs/
+.inspect_test_logs/
